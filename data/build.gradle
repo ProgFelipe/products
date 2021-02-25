@@ -5,6 +5,7 @@ plugins {
 
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 30
@@ -53,8 +54,11 @@ dependencies {
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$loggin_interceptor_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     // Moshi
     implementation "com.squareup.retrofit2:converter-moshi:$moshi_version"
+    implementation "com.squareup.moshi:moshi-kotlin:1.11.0"
 
     // RxJava adapter
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rxadaptar_version"

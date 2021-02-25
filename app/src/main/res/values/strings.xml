@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">search</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_internet_message">Check your internet connection</string>
+    <string name="generic_error_message">Something when wrong..</string>
+    <string name="content_description_product">Imagen del producto</string>
+    <string name="search_hint">Busca productos, marcas y más…</string>
 </resources>

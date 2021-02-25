@@ -1,3 +1,12 @@
 package com.example.data.domain.search.entities
 
-data class Product(val temp : String)
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class Product(
+    val title: String?,
+    val price: Long?,
+    val thumbnailUri: String?,
+    val cityLocation: String?
+) : Parcelable

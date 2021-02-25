@@ -11,10 +11,13 @@ buildscript {
     ext.hilt_version = "2.31.2-alpha"
     // Data
     ext.retrofit_version = "2.9.0"
-    ext.moshi_version = "2.4.0"
+    ext.moshi_version = "2.6.2"
     ext.rxadaptar_version = "2.9.0"
     ext.rxjava_version = "2.2.12"
     ext.rxandroid_version = "2.1.1"
+    ext.loggin_interceptor_version = "4.9.1"
+    ext.nav_version = "2.3.3"
+    ext.lifecycle_version = "2.3.0"
     repositories {
         google()
         jcenter()
@@ -24,6 +27,8 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // Hilt DI
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
+        // Safe nav args
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

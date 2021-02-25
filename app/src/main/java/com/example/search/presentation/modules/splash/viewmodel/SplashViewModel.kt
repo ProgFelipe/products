@@ -12,18 +12,10 @@ class SplashViewModel @Inject constructor() : BaseViewModel() {
     val navigateToHome get() = _navigateToHome
 
     fun initialize() {
-        if (networkUtils.isNetworkAvailable()) {
-            navigateToHome()
-        } else {
-            displayErrorDialog()
-        }
+        navigateToHome()
     }
 
     private fun navigateToHome() {
         _navigateToHome.value = true
-    }
-
-    private fun displayErrorDialog() {
-
     }
 }
