@@ -6,6 +6,7 @@ import androidx.navigation.NavDirections
 import com.example.data.domain.search.ProductsUseCase
 import com.example.data.domain.search.entities.Product
 import com.example.data.domain.search.entities.Products
+import com.example.search.BuildConfig
 import com.example.search.presentation.modules.home.home.view.HomeFragmentDirections
 import com.example.search.presentation.utils.BaseViewModel
 import com.example.search.presentation.utils.SingleLiveData
@@ -39,7 +40,10 @@ class HomeViewModel @Inject constructor(
             userInputValue = userInputText
             productsUseCase.searchProducts(userInputText)
                 .execute({ products: Products -> onSuccess(products) }, { error: Throwable ->
-                    Log.e("Error", error.message ?: "")
+                    // Handle error
+                    if (BuildConfig.DEBUG) {
+                        Log.e("Error", error.message ?: "")
+                    }
                 })
         }
     }

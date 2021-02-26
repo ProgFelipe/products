@@ -17,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import kotlinx.android.synthetic.main.fragment_home.*
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
@@ -56,9 +56,9 @@ class HomeFragment : BaseFragment() {
         viewModel.setupView()
     }
 
-    private val textWatcher = SearchTextWatcher() {
+    private val textWatcher = SearchTextWatcher {
         Observable.just(txt_input_layout_search.text)
-            .debounce(WAIT_TO_CALL_SERVICE, TimeUnit.MILLISECONDS)
+            .debounce(WAIT_TO_CALL_SERVICE, MILLISECONDS)
             .observeOn(mainThread()).subscribe {
                 it?.let {
                     viewModel.searchProducts(userInputText = it.toString())
@@ -75,7 +75,7 @@ class HomeFragment : BaseFragment() {
 
     private fun setupViewModelObservers() {
         viewModel.serviceStatusLiveData.observe(viewLifecycleOwner, {
-            it.handleStatus(progress_indicator)
+            it.handleStatus(constraint_layout_home, progress_indicator)
         })
         viewModel.searchValueLiveData.observe(viewLifecycleOwner, {
             txt_input_layout_search.removeTextChangedListener(textWatcher)

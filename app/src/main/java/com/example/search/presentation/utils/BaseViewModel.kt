@@ -26,13 +26,15 @@ abstract class BaseViewModel : ViewModel() {
         if (networkUtils.isNetworkAvailable()) {
             compositeDisposable.add(
                 this.subscribeOn(subscribeOnScheduler)
-                    .observeOn(observeOnScheduler).doOnSuccess {
-                        success(it)
-                        _serviceStatus.value = SUCCESS
-                    }.doOnError {
-                        _serviceStatus.value = ERROR
-                        error(it)
-                    }.subscribe()
+                    .observeOn(observeOnScheduler).subscribe(
+                        {
+                            _serviceStatus.value = SUCCESS
+                            success(it)
+                        }, {
+                            _serviceStatus.value = ERROR
+                            error(it)
+                        }
+                    )
             )
         } else {
             _serviceStatus.value = NO_INTERNET

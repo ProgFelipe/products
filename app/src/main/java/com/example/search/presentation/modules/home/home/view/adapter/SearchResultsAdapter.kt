@@ -7,9 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.data.domain.search.entities.Product
 import com.example.search.R
+import com.example.search.presentation.utils.setupImageUri
 
 class SearchResultsAdapter(val callBack: (selectedProduct: Product) -> Unit) :
     RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
@@ -37,11 +37,10 @@ class SearchResultsAdapter(val callBack: (selectedProduct: Product) -> Unit) :
         holder.container.setOnClickListener {
             callBack(products[position])
         }
-        Glide
-            .with(holder.container.context)
-            .load(products[position].thumbnailUri)
-            .centerCrop()
-            .into(holder.productImageView)
+        holder.productImageView.setupImageUri(
+            holder.container.context,
+            products[position].thumbnailUri
+        )
     }
 
     fun updateData(data: List<Product>) {
