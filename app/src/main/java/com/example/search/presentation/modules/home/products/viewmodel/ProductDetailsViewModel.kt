@@ -8,9 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductDetailsViewModel @Inject constructor(
-    private val productsUseCase: ProductsUseCase
-) : ViewModel() {
+class ProductDetailsViewModel @Inject constructor() : ViewModel() {
 
     private lateinit var product: Product
 

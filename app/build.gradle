@@ -23,6 +23,11 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Mock some android platforms calls like Log
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
@@ -80,4 +85,18 @@ dependencies {
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    // Testing
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.mockito:mockito-core:${mockito_version}"
+    testImplementation "org.mockito:mockito-inline:${mockito_version}"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${mockito_kotlin_version}"
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_reflection_version"
+    testImplementation "androidx.arch.core:core-testing:$core_testing_version"
+    androidTestImplementation "androidx.arch.core:core-testing:$core_testing_version"
+
+    androidTestImplementation "androidx.test:core:$test_version"
+    androidTestImplementation "androidx.test:runner:$test_version"
+    androidTestImplementation "androidx.test:rules:$junit_rules_version"
+    androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
 }

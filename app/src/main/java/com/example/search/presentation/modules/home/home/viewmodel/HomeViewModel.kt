@@ -18,7 +18,12 @@ class HomeViewModel @Inject constructor(
     private val productsUseCase: ProductsUseCase
 ) : BaseViewModel() {
 
-    private lateinit var userInputValue: String
+    companion object {
+        private const val ERROR = "Error"
+        private const val EMPTY_STRING = ""
+    }
+
+    private var userInputValue: String = EMPTY_STRING
 
     private val _searchValueLiveData = MutableLiveData<String>()
     val searchValueLiveData get() = _searchValueLiveData
@@ -30,30 +35,26 @@ class HomeViewModel @Inject constructor(
     val navigationEventLiveData get() = _navigationEventLiveData
 
     fun setupView() {
-        if (::userInputValue.isInitialized && userInputValue.isNotBlank()) {
+        if (userInputValue.isNotBlank()) {
             _searchValueLiveData.value = userInputValue
         }
     }
 
     fun searchProducts(userInputText: String) {
-        if (shouldSearch(userInputText)) {
+        if (userInputChanged(userInputText)) {
             userInputValue = userInputText
             productsUseCase.searchProducts(userInputText)
                 .execute({ products: Products -> onSuccess(products) }, { error: Throwable ->
                     // Handle error
                     if (BuildConfig.DEBUG) {
-                        Log.e("Error", error.message ?: "")
+                        Log.e(ERROR, error.message ?: EMPTY_STRING)
                     }
                 })
         }
     }
 
-    private fun shouldSearch(userInputText: String): Boolean {
-        return if (::userInputValue.isInitialized.not()) {
-            true
-        } else {
-            userInputValue != userInputText
-        }
+    private fun userInputChanged(userInputText: String): Boolean {
+        return userInputValue != userInputText
     }
 
     fun navigateToProductDetail(selectedProduct: Product) {
