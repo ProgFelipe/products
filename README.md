@@ -15,11 +15,11 @@
 Architecture and Tech aspects:
 
 - [Main Architecture] - Clean architecture with two project modules App and Data.
-Data: contains UseCases and domain models
+Data: contains UseCases, Repository, Domain and service dto models.
 App: contains the presentation layer, like viewModels, customViews.
 In this layer you will see a BaseViewModel which cover useCase calls with success and error callbacks and a common status handler.
 
-- [Unit Test] - Tried to cover the UseCases, Repositories, ViewModels and Domain.
+- [Unit Test] - Cover the UseCases, Repositories, ViewModels and Domain.
 
 
 ## Libraries
@@ -37,6 +37,7 @@ Instructions on how to use them in your own application are linked below.
 | Mockito |
 | com.nhaarman.mockitokotlin2 |
 | Glide |
+| Moshi |
 
 ## License
 
