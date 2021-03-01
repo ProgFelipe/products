@@ -51,4 +51,28 @@ class ProductsUseCaseTest {
         // then
         single.test().assertError(error)
     }
+
+    @Test
+    fun searchSuggestions_invoked_returnSuccess() {
+        // given
+        val result = emptyList<String>()
+        given(productsRepositoryMock.searchSuggestions(searchValue)).willReturn(Single.just(result))
+        // when
+        val single = sut.searchSuggestions(searchValue)
+        // then
+        single.test().assertComplete()
+    }
+
+    @Test
+    fun searchSuggestions_invoked_returnFailure() {
+        // give
+        val error = Throwable()
+        given(productsRepositoryMock.searchSuggestions(searchValue)).willReturn(
+            Single.error(error)
+        )
+        // when
+        val single = sut.searchSuggestions(searchValue)
+        // then
+        single.test().assertError(error)
+    }
 }

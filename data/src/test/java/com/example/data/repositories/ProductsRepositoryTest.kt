@@ -2,6 +2,7 @@ package com.example.data.repositories
 
 import com.example.data.domain.search.ProductsRepository
 import com.example.data.model.ProductsDto
+import com.example.data.model.SuggestedQueriesDto
 import com.example.data.network.ProductApi
 import com.nhaarman.mockitokotlin2.given
 import io.reactivex.Single
@@ -32,11 +33,11 @@ class ProductsRepositoryTest {
     @Test
     fun searchProducts_invoked_returnSuccess() {
         // given
-        given(productApiMock.searchProducts(searchValue, limit, apiVersion)).willReturn(
+        given(productApiMock.searchProducts(searchValue, apiVersion)).willReturn(
             Single.just(ProductsDto())
         )
         // when
-        val single = sut.searchProducts(searchValue, limit, apiVersion)
+        val single = sut.searchProducts(searchValue, apiVersion)
         // then
         single.test().assertComplete()
     }
@@ -45,11 +46,36 @@ class ProductsRepositoryTest {
     fun searchProducts_invoked_returnsFailure() {
         // given
         val error = Throwable()
-        given(productApiMock.searchProducts(searchValue, limit, apiVersion)).willReturn(
+        given(productApiMock.searchProducts(searchValue, apiVersion)).willReturn(
             Single.error(error)
         )
         // when
-        val single = sut.searchProducts(searchValue, limit, apiVersion)
+        val single = sut.searchProducts(searchValue, apiVersion)
+        // then
+        single.test().assertError(error)
+    }
+
+    @Test
+    fun searchSuggestions_invoked_returnSuccess() {
+        // given
+        given(productApiMock.searchSuggestions(searchValue, limit, apiVersion)).willReturn(
+            Single.just(SuggestedQueriesDto(emptyList()))
+        )
+        // when
+        val single = sut.searchSuggestions(searchValue, limit, apiVersion)
+        // then
+        single.test().assertComplete()
+    }
+
+    @Test
+    fun searchSuggestions_invoked_returnsFailure() {
+        // given
+        val error = Throwable()
+        given(productApiMock.searchSuggestions(searchValue, limit, apiVersion)).willReturn(
+            Single.error(error)
+        )
+        // when
+        val single = sut.searchSuggestions(searchValue, limit, apiVersion)
         // then
         single.test().assertError(error)
     }

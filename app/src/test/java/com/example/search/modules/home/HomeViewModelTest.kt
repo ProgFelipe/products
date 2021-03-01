@@ -5,6 +5,8 @@ import androidx.navigation.NavDirections
 import com.example.data.domain.search.ProductsUseCase
 import com.example.data.domain.search.entities.Product
 import com.example.data.domain.search.entities.Products
+import com.example.data.model.EMPTY_STRING
+import com.example.search.modules.utils.RxTrampolineSchedulerRule
 import com.example.search.modules.utils.callPrivateFun
 import com.example.search.modules.utils.setFieldHelper
 import com.example.search.modules.utils.setSuperClassFieldHelper
@@ -16,9 +18,6 @@ import com.example.search.presentation.utils.ServiceStatus.*
 import com.example.search.presentation.utils.SingleLiveData
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Single
-import io.reactivex.android.plugins.RxAndroidPlugins
-import io.reactivex.plugins.RxJavaPlugins
-import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -34,6 +33,7 @@ class HomeViewModelTest {
         private const val FIELD_NAVIGATION_EVENT_LIVE_DATA = "_navigationEventLiveData"
         private const val FIELD_PRODUCTS_LIVE_DATA = "_productsLiveData"
         private const val FIELD_SERVICE_STATUS = "_serviceStatus"
+        private const val FIELD_SUGGESTED_PRODUCTS_LIVE_DATA = "_suggestedProductsLiveData"
     }
 
     @Mock
@@ -46,11 +46,18 @@ class HomeViewModelTest {
     private lateinit var serviceStatus: SingleLiveData<ServiceStatus>
 
     @Mock
+    private lateinit var suggestedProductsLiveData: SingleLiveData<List<String>>
+
+    @Mock
     private lateinit var networkUtilsMock: NetworkUtils
 
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
+
+    @Rule
+    @JvmField
+    var testSchedulerRule = RxTrampolineSchedulerRule()
 
     @Mock
     private lateinit var productsUseCaseMock: ProductsUseCase
@@ -74,9 +81,11 @@ class HomeViewModelTest {
             serviceStatus,
             sut
         )
-        RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
-        RxAndroidPlugins.setMainThreadSchedulerHandler { Schedulers.trampoline() }
+        setFieldHelper(
+            FIELD_SUGGESTED_PRODUCTS_LIVE_DATA,
+            suggestedProductsLiveData,
+            sut
+        )
     }
 
     @Test
@@ -202,6 +211,77 @@ class HomeViewModelTest {
         argumentCaptor<Products> {
             verify(productsLiveData).value = capture()
             Assert.assertEquals(products, allValues[0])
+        }
+    }
+
+    @Test
+    fun shouldSuggestFilter_invoked_returnFalse() {
+        // when
+        val result = sut.shouldSuggestFilter("c")
+        // then
+        Assert.assertFalse(result)
+    }
+
+    @Test
+    fun shouldSuggestFilter_invoked_returnTrue() {
+        // when
+        val result = sut.shouldSuggestFilter("consulta")
+        // then
+        Assert.assertTrue(result)
+    }
+
+    @Test
+    fun searchSuggestions_invoked_serviceSuccess() {
+        // given
+        val list = emptyList<String>()
+        given(productsUseCaseMock.searchSuggestions(sut.userInputValue)).willReturn(Single.just(list))
+        given(networkUtilsMock.isNetworkAvailable()).willReturn(true)
+        sut.networkUtils = networkUtilsMock
+        //when
+        sut.searchSuggestions(sut.userInputValue)
+        // then
+        argumentCaptor<ServiceStatus> {
+            verify(serviceStatus, times(2)).value = capture()
+            Assert.assertEquals(PENDING, allValues[0])
+            Assert.assertEquals(SUCCESS, allValues[1])
+        }
+        argumentCaptor<List<String>> {
+            verify(suggestedProductsLiveData).value = capture()
+            Assert.assertEquals(list, allValues[0])
+        }
+    }
+
+    @Test
+    fun searchSuggestions_invoked_serviceFailure() {
+        // given
+        val error = Throwable()
+        given(productsUseCaseMock.searchSuggestions(sut.userInputValue)).willReturn(
+            Single.error(
+                error
+            )
+        )
+        given(networkUtilsMock.isNetworkAvailable()).willReturn(true)
+        sut.networkUtils = networkUtilsMock
+        // when
+        sut.searchSuggestions(EMPTY_STRING)
+        // then
+        argumentCaptor<ServiceStatus> {
+            verify(serviceStatus, times(2)).value = capture()
+            Assert.assertEquals(PENDING, allValues[0])
+            Assert.assertEquals(ERROR, allValues[1])
+        }
+    }
+
+    @Test
+    fun onSearchSuggestionSuccess_invoked_setSuggestedProductsValue() {
+        // given
+        val list = emptyList<List<String>>()
+        // when
+        sut.callPrivateFun("onSearchSuggestionSuccess", list)
+        // then
+        argumentCaptor<List<String>> {
+            verify(suggestedProductsLiveData).value = capture()
+            Assert.assertEquals(list, allValues[0])
         }
     }
 }

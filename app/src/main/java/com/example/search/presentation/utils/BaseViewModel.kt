@@ -16,7 +16,7 @@ abstract class BaseViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
 
     private val observeOnScheduler by lazy { AndroidSchedulers.mainThread() }
-    private val subscribeOnScheduler by lazy { Schedulers.single() }
+    private val subscribeOnScheduler by lazy { Schedulers.io() }
 
     private val _serviceStatus = MutableLiveData<ServiceStatus>()
     val serviceStatusLiveData get() = _serviceStatus
