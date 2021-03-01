@@ -34,13 +34,17 @@ data class ProductsDto(
 ) {
     fun mapToDomain(): Products {
         val products = ArrayList<Product>(results?.size ?: 0)
-        this.results?.forEach {
+        this.results?.forEach { result ->
             products.add(
                 Product(
-                    title = it.title,
-                    price = it.price,
-                    thumbnailUri = it.thumbnail,
-                    cityLocation = it.address?.cityName
+                    title = result.title,
+                    price = result.price,
+                    thumbnailUri = result.thumbnail,
+                    cityLocation = result.address?.cityName,
+                    attributes = result.attributes?.joinToString(
+                        separator = "",
+                        postfix = System.lineSeparator()
+                    ) { it.name + "  :  " + it.valueName }
                 )
             )
         }

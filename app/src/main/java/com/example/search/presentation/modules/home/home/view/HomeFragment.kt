@@ -4,27 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.domain.search.entities.Product
 import com.example.search.R
-import com.example.search.presentation.components.SearchTextWatcher
+import com.example.search.presentation.components.CustomSearchView
 import com.example.search.presentation.modules.home.home.view.adapter.SearchResultsAdapter
 import com.example.search.presentation.modules.home.home.viewmodel.HomeViewModel
 import com.example.search.presentation.utils.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import kotlinx.android.synthetic.main.fragment_home.*
-import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
-
-    companion object {
-        private const val WAIT_TO_CALL_SERVICE = 2000L
-    }
 
     private val viewModel: HomeViewModel by activityViewModels()
 
@@ -37,39 +31,35 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupListeners()
         setupRecyclerView()
+        setupCustomSearchView()
+        setupListeners()
         setupViewModelObservers()
+    }
+
+    private fun setupCustomSearchView() {
+        (search_view_products as CustomSearchView).setupView(
+            inputText = viewModel.userInputValue,
+            shouldSuggest = { inputText -> viewModel.shouldSuggestFilter(inputText) },
+            hideKeyBoard = { hideKeyboard() },
+            onSuggestionsSearch = { inputText -> viewModel.searchSuggestions(inputText) },
+            onSearch = { inputText -> viewModel.searchProducts(inputText) }
+        )
     }
 
     private fun setupRecyclerView() {
         recycler_view_search_results.layoutManager = LinearLayoutManager(context)
         recycler_view_search_results.adapter = SearchResultsAdapter { selectedProduct: Product ->
+            viewModel.userInputValue = search_view_products.query.toString()
             viewModel.navigateToProductDetail(
                 selectedProduct
             )
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel.setupView()
-    }
-
-    private val textWatcher = SearchTextWatcher {
-        Observable.just(txt_input_layout_search.text)
-            .debounce(WAIT_TO_CALL_SERVICE, MILLISECONDS)
-            .observeOn(mainThread()).subscribe {
-                it?.let {
-                    viewModel.searchProducts(userInputText = it.toString())
-                }
-            }
-    }
-
     private fun setupListeners() {
-        txt_input_layout_search.addTextChangedListener(textWatcher)
-        text_input_search.setEndIconOnClickListener {
-            viewModel.searchProducts(txt_input_layout_search.text.toString())
+        image_button_search.setOnClickListener {
+            viewModel.searchProducts(search_view_products.query.toString())
         }
     }
 
@@ -77,13 +67,16 @@ class HomeFragment : BaseFragment() {
         viewModel.serviceStatusLiveData.observe(viewLifecycleOwner, {
             it.handleStatus(constraint_layout_home, progress_indicator)
         })
-        viewModel.searchValueLiveData.observe(viewLifecycleOwner, {
-            txt_input_layout_search.removeTextChangedListener(textWatcher)
-            txt_input_layout_search.setText(it)
-            txt_input_layout_search.addTextChangedListener(textWatcher)
-        })
         viewModel.productsLiveData.observe(viewLifecycleOwner, {
+            it.products.isEmpty().let { isEmpty ->
+                image_view_empty_state.isVisible = isEmpty
+                empty_state_text_view.isVisible = isEmpty
+                recycler_view_search_results.isVisible = isEmpty.not()
+            }
             (recycler_view_search_results.adapter as SearchResultsAdapter).updateData(it.products)
+        })
+        viewModel.suggestedProductsLiveData.observe(viewLifecycleOwner, {
+            search_view_products.setSuggestedList(it)
         })
         viewModel.navigationEventLiveData.observe(viewLifecycleOwner, {
             findNavController().navigate(it)

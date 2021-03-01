@@ -6,7 +6,6 @@ import com.example.data.domain.search.ProductsUseCase
 import com.example.data.domain.search.entities.Product
 import com.example.data.domain.search.entities.Products
 import com.example.search.modules.utils.callPrivateFun
-import com.example.search.modules.utils.getProperty
 import com.example.search.modules.utils.setFieldHelper
 import com.example.search.modules.utils.setSuperClassFieldHelper
 import com.example.search.presentation.modules.home.home.view.HomeFragmentDirections
@@ -32,15 +31,10 @@ import org.mockito.junit.MockitoJUnitRunner
 class HomeViewModelTest {
 
     companion object {
-        private const val FIELD_USER_INPUT_VALUE = "userInputValue"
-        private const val FIELD_SEARCH_VALUE_LIVE_DATA = "_searchValueLiveData"
         private const val FIELD_NAVIGATION_EVENT_LIVE_DATA = "_navigationEventLiveData"
         private const val FIELD_PRODUCTS_LIVE_DATA = "_productsLiveData"
         private const val FIELD_SERVICE_STATUS = "_serviceStatus"
     }
-
-    @Mock
-    private lateinit var searchValueLiveData: SingleLiveData<String>
 
     @Mock
     private lateinit var navigationEventLiveData: SingleLiveData<NavDirections>
@@ -66,11 +60,6 @@ class HomeViewModelTest {
     fun setup() {
         sut = HomeViewModel(productsUseCaseMock)
         setFieldHelper(
-            FIELD_SEARCH_VALUE_LIVE_DATA,
-            searchValueLiveData,
-            sut
-        )
-        setFieldHelper(
             FIELD_NAVIGATION_EVENT_LIVE_DATA,
             navigationEventLiveData,
             sut
@@ -91,32 +80,6 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun setupView_invokedWithInputText_setValueInvoked() {
-        // given
-        val searchedProduct = "userInputValue"
-        setFieldHelper(
-            FIELD_USER_INPUT_VALUE,
-            searchedProduct,
-            sut
-        )
-        // when
-        sut.setupView()
-        // then
-        argumentCaptor<String> {
-            verify(searchValueLiveData).value = capture()
-            Assert.assertEquals(searchedProduct, allValues[0])
-        }
-    }
-
-    @Test
-    fun setupView_invokedWithoutInputText_setValueNotInvoked() {
-        // when
-        sut.setupView()
-        // then
-        verifyZeroInteractions(searchValueLiveData)
-    }
-
-    @Test
     fun searchProducts_invokedWithInput_updateProperty() {
         // given
         given(networkUtilsMock.isNetworkAvailable()).willReturn(false)
@@ -128,7 +91,7 @@ class HomeViewModelTest {
         // when
         sut.searchProducts(userInputText)
         // then
-        Assert.assertEquals(userInputText, getProperty<String>(sut, FIELD_USER_INPUT_VALUE))
+        Assert.assertEquals(userInputText, sut.userInputValue)
     }
 
     @Test

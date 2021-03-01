@@ -11,7 +11,11 @@ interface ProductsRepository {
 
     fun searchProducts(
         searchValue: String,
-        limit: Int = DEFAULT_QUERY_LIMIT,
         apiVersion: Int = API_VERSION
     ): Single<Products>
+
+    fun searchSuggestions(
+        searchValue: String, limit: Int = DEFAULT_QUERY_LIMIT,
+        apiVersion: Int = API_VERSION
+    ): Single<List<String>>
 }

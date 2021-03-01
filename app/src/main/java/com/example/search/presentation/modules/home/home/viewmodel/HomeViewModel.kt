@@ -21,12 +21,20 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val ERROR = "Error"
         private const val EMPTY_STRING = ""
+        private const val MINIMUM_SUGGESTION_LENGTH = 3
     }
 
-    private var userInputValue: String = EMPTY_STRING
+    private var _userInputValue: String = EMPTY_STRING
 
-    private val _searchValueLiveData = MutableLiveData<String>()
-    val searchValueLiveData get() = _searchValueLiveData
+    // Encapsulated field
+    var userInputValue: String
+        get() = _userInputValue
+        set(value) {
+            _userInputValue = value
+        }
+
+    private val _suggestedProductsLiveData = MutableLiveData<List<String>>()
+    val suggestedProductsLiveData get() = _suggestedProductsLiveData
 
     private val _productsLiveData = MutableLiveData<Products>()
     val productsLiveData get() = _productsLiveData
@@ -34,27 +42,23 @@ class HomeViewModel @Inject constructor(
     private val _navigationEventLiveData = SingleLiveData<NavDirections>()
     val navigationEventLiveData get() = _navigationEventLiveData
 
-    fun setupView() {
-        if (userInputValue.isNotBlank()) {
-            _searchValueLiveData.value = userInputValue
-        }
+    fun searchProducts(userInputText: String) {
+        _userInputValue = userInputText
+        searchProducts()
     }
 
-    fun searchProducts(userInputText: String) {
-        if (userInputChanged(userInputText)) {
-            userInputValue = userInputText
-            productsUseCase.searchProducts(userInputText)
-                .execute({ products: Products -> onSuccess(products) }, { error: Throwable ->
-                    // Handle error
-                    if (BuildConfig.DEBUG) {
-                        Log.e(ERROR, error.message ?: EMPTY_STRING)
-                    }
-                })
-        }
+    private fun searchProducts() {
+        productsUseCase.searchProducts(_userInputValue)
+            .execute({ products: Products -> onSuccess(products) }, { error: Throwable ->
+                // Handle error
+                if (BuildConfig.DEBUG) {
+                    Log.e(ERROR, error.message ?: EMPTY_STRING)
+                }
+            })
     }
 
     private fun userInputChanged(userInputText: String): Boolean {
-        return userInputValue != userInputText
+        return _userInputValue != userInputText
     }
 
     fun navigateToProductDetail(selectedProduct: Product) {
@@ -64,5 +68,26 @@ class HomeViewModel @Inject constructor(
 
     private fun onSuccess(products: Products) {
         _productsLiveData.value = products
+    }
+
+    fun searchSuggestions(userInputText: String) {
+        _userInputValue = userInputText
+        productsUseCase.searchSuggestions(_userInputValue)
+            .execute(
+                { suggestedQueries: List<String> -> onSearchSuggestionSuccess(suggestedQueries) },
+                { error: Throwable ->
+                    // Handle error
+                    if (BuildConfig.DEBUG) {
+                        Log.e(ERROR, error.message ?: EMPTY_STRING)
+                    }
+                })
+    }
+
+    fun shouldSuggestFilter(userInputText: String): Boolean {
+        return userInputText.isNotEmpty() && userInputChanged(userInputText) && userInputText.length >= MINIMUM_SUGGESTION_LENGTH
+    }
+
+    private fun onSearchSuggestionSuccess(suggestedQueries: List<String>) {
+        _suggestedProductsLiveData.value = suggestedQueries
     }
 }

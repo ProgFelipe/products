@@ -12,9 +12,16 @@ class ProductsRepositoryImpl @Inject constructor(
 
     override fun searchProducts(
         searchValue: String,
-        limit: Int,
         apiVersion: Int
     ): Single<Products> {
-        return productApi.searchProducts(searchValue, limit, apiVersion).map { it.mapToDomain() }
+        return productApi.searchProducts(searchValue, apiVersion).map { it.mapToDomain() }
+    }
+
+    override fun searchSuggestions(
+        searchValue: String,
+        limit: Int,
+        apiVersion: Int
+    ): Single<List<String>> {
+        return productApi.searchSuggestions(searchValue, limit, apiVersion).map { it.mapToDomain() }
     }
 }

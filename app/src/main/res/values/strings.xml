@@ -1,7 +1,17 @@
 <resources>
     <string name="app_name">merca</string>
+
+    <!-- Generics -->
     <string name="no_internet_message">Revisa tu conexión a internet</string>
     <string name="generic_error_message">Ha ocurrido un error…</string>
-    <string name="content_description_product">Imagen del producto</string>
+
+    <!-- Home -->
     <string name="search_hint">Busca productos, marcas y más…</string>
+    <string name="home_empty_state">BUSCA Y ENCUENTRA\nLO QUE TE GUSTA</string>
+    
+    <!-- Content descriptions -->
+    <string name="content_description_product">Imagen del producto</string>
+    <string name="content_description_search_button">Boton buscar</string>
+    <string name="content_description_empty_state">Sin resultados</string>
+
 </resources>

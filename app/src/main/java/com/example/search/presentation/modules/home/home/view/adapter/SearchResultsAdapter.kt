@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.data.domain.search.entities.Product
 import com.example.search.R
 import com.example.search.presentation.utils.setupImageUri
+import com.example.search.presentation.utils.toMoneyFormat
 
 class SearchResultsAdapter(val callBack: (selectedProduct: Product) -> Unit) :
     RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
@@ -32,7 +33,7 @@ class SearchResultsAdapter(val callBack: (selectedProduct: Product) -> Unit) :
 
     override fun onBindViewHolder(holder: SearchResultsViewHolder, position: Int) {
         holder.titleTextView.text = products[position].title
-        holder.priceTextView.text = products[position].price.toString()
+        holder.priceTextView.text = products[position].price?.toMoneyFormat()
         holder.cityTextView.text = products[position].cityLocation
         holder.container.setOnClickListener {
             callBack(products[position])

@@ -8,4 +8,7 @@ class ProductsUseCase @Inject constructor(private val productsRepository: Produc
         searchValue: String
     ) = productsRepository.searchProducts(searchValue)
 
+    fun searchSuggestions(
+        searchValue: String
+    ) = productsRepository.searchSuggestions(searchValue)
 }

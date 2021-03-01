@@ -8,5 +8,6 @@ data class Product(
     val title: String? = "",
     val price: Long? = null,
     val thumbnailUri: String? = "",
-    val cityLocation: String? = ""
+    val cityLocation: String? = "",
+    val attributes: String? = ""
 ) : Parcelable
