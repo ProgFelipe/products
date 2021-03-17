@@ -68,12 +68,12 @@ class HomeFragment : BaseFragment() {
             it.handleStatus(constraint_layout_home, progress_indicator)
         })
         viewModel.productsLiveData.observe(viewLifecycleOwner, {
-            it.products.isEmpty().let { isEmpty ->
+            it.isEmpty().let { isEmpty ->
                 image_view_empty_state.isVisible = isEmpty
                 empty_state_text_view.isVisible = isEmpty
                 recycler_view_search_results.isVisible = isEmpty.not()
             }
-            (recycler_view_search_results.adapter as SearchResultsAdapter).updateData(it.products)
+            (recycler_view_search_results.adapter as SearchResultsAdapter).updateData(it)
         })
         viewModel.suggestedProductsLiveData.observe(viewLifecycleOwner, {
             search_view_products.setSuggestedList(it)

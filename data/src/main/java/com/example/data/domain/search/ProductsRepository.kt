@@ -1,6 +1,6 @@
 package com.example.data.domain.search
 
-import com.example.data.domain.search.entities.Products
+import com.example.data.domain.search.entities.Product
 import io.reactivex.Single
 
 interface ProductsRepository {
@@ -12,7 +12,7 @@ interface ProductsRepository {
     fun searchProducts(
         searchValue: String,
         apiVersion: Int = API_VERSION
-    ): Single<Products>
+    ): Single<List<Product>>
 
     fun searchSuggestions(
         searchValue: String, limit: Int = DEFAULT_QUERY_LIMIT,

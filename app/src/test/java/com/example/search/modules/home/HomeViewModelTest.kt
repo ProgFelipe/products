@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavDirections
 import com.example.data.domain.search.ProductsUseCase
 import com.example.data.domain.search.entities.Product
-import com.example.data.domain.search.entities.Products
 import com.example.data.model.EMPTY_STRING
 import com.example.search.modules.utils.RxTrampolineSchedulerRule
 import com.example.search.modules.utils.callPrivateFun
@@ -40,7 +39,7 @@ class HomeViewModelTest {
     private lateinit var navigationEventLiveData: SingleLiveData<NavDirections>
 
     @Mock
-    private lateinit var productsLiveData: SingleLiveData<Products>
+    private lateinit var productsLiveData: SingleLiveData<List<Product>>
 
     @Mock
     private lateinit var serviceStatus: SingleLiveData<ServiceStatus>
@@ -95,7 +94,7 @@ class HomeViewModelTest {
         sut.networkUtils = networkUtilsMock
         val userInputText = "someText"
         given(productsUseCaseMock.searchProducts(userInputText)).willReturn(
-            Single.just(Products(emptyList()))
+            Single.just(emptyList())
         )
         // when
         sut.searchProducts(userInputText)
@@ -107,7 +106,7 @@ class HomeViewModelTest {
     fun searchProducts_invokedWithInput_serviceReturnsSuccess() {
         // given
         val userInputText = "someText"
-        val products = Products(emptyList())
+        val products = emptyList<Product>()
 
         given(networkUtilsMock.isNetworkAvailable()).willReturn(true)
         sut.networkUtils = networkUtilsMock
@@ -122,7 +121,7 @@ class HomeViewModelTest {
             Assert.assertEquals(PENDING, allValues[0])
             Assert.assertEquals(SUCCESS, allValues[1])
         }
-        argumentCaptor<Products> {
+        argumentCaptor<List<Product>> {
             verify(productsLiveData).value = capture()
             Assert.assertEquals(products, allValues[0])
         }
@@ -204,11 +203,11 @@ class HomeViewModelTest {
     @Test
     fun onSuccess_invoked_setValueInvoked() {
         // given
-        val products = Products(emptyList())
+        val products = emptyList<Product>()
         // when
         sut.callPrivateFun("onSuccess", products)
         // then
-        argumentCaptor<Products> {
+        argumentCaptor<List<Product>> {
             verify(productsLiveData).value = capture()
             Assert.assertEquals(products, allValues[0])
         }

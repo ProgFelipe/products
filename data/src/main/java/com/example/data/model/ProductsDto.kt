@@ -1,7 +1,6 @@
 package com.example.data.model
 
 import com.example.data.domain.search.entities.Product
-import com.example.data.domain.search.entities.Products
 import com.squareup.moshi.Json
 
 const val EMPTY_STRING = ""
@@ -32,23 +31,19 @@ data class ProductsDto(
     @Json(name = "available_filters")
     val availableFilters: List<AvailableFilter> = emptyList()
 ) {
-    fun mapToDomain(): Products {
-        val products = ArrayList<Product>(results?.size ?: 0)
-        this.results?.forEach { result ->
-            products.add(
-                Product(
-                    title = result.title,
-                    price = result.price,
-                    thumbnailUri = result.thumbnail,
-                    cityLocation = result.address?.cityName,
-                    attributes = result.attributes?.joinToString(
-                        separator = "",
-                        postfix = System.lineSeparator()
-                    ) { it.name + "  :  " + it.valueName }
-                )
+    fun mapToDomain(): List<Product> {
+        return this.results?.map { result ->
+            Product(
+                title = result.title,
+                price = result.price,
+                thumbnailUri = result.thumbnail,
+                cityLocation = result.address?.cityName,
+                attributes = result.attributes?.joinToString(
+                    separator = "",
+                    postfix = System.lineSeparator()
+                ) { it.name + "  :  " + it.valueName }
             )
-        }
-        return Products(products)
+        }?.toList() ?: emptyList()
     }
 }
 

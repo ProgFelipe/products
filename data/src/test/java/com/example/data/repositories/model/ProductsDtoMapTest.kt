@@ -30,8 +30,8 @@ class ProductsDtoMapTest {
         // when
         val domainObject = serviceDTO.mapToDomain()
         // then
-        Assert.assertEquals(1, domainObject.products.size)
-        domainObject.products[0].let {
+        Assert.assertEquals(1, domainObject.size)
+        domainObject[0].let {
             Assert.assertEquals(title, it.title)
             Assert.assertEquals(price, it.price)
             Assert.assertEquals(thumbnail, it.thumbnailUri)

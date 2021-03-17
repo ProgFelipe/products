@@ -1,7 +1,7 @@
 package com.example.data.repositories
 
 import com.example.data.domain.search.ProductsRepository
-import com.example.data.domain.search.entities.Products
+import com.example.data.domain.search.entities.Product
 import com.example.data.network.ProductApi
 import io.reactivex.Single
 import javax.inject.Inject
@@ -13,7 +13,7 @@ class ProductsRepositoryImpl @Inject constructor(
     override fun searchProducts(
         searchValue: String,
         apiVersion: Int
-    ): Single<Products> {
+    ): Single<List<Product>> {
         return productApi.searchProducts(searchValue, apiVersion).map { it.mapToDomain() }
     }
 

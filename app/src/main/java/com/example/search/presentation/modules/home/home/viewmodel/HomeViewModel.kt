@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import com.example.data.domain.search.ProductsUseCase
 import com.example.data.domain.search.entities.Product
-import com.example.data.domain.search.entities.Products
 import com.example.search.BuildConfig
 import com.example.search.presentation.modules.home.home.view.HomeFragmentDirections
 import com.example.search.presentation.utils.BaseViewModel
@@ -36,7 +35,7 @@ class HomeViewModel @Inject constructor(
     private val _suggestedProductsLiveData = MutableLiveData<List<String>>()
     val suggestedProductsLiveData get() = _suggestedProductsLiveData
 
-    private val _productsLiveData = MutableLiveData<Products>()
+    private val _productsLiveData = MutableLiveData<List<Product>>()
     val productsLiveData get() = _productsLiveData
 
     private val _navigationEventLiveData = SingleLiveData<NavDirections>()
@@ -49,7 +48,7 @@ class HomeViewModel @Inject constructor(
 
     private fun searchProducts() {
         productsUseCase.searchProducts(_userInputValue)
-            .execute({ products: Products -> onSuccess(products) }, { error: Throwable ->
+            .execute({ products: List<Product> -> onSuccess(products) }, { error: Throwable ->
                 // Handle error
                 if (BuildConfig.DEBUG) {
                     Log.e(ERROR, error.message ?: EMPTY_STRING)
@@ -66,7 +65,7 @@ class HomeViewModel @Inject constructor(
             HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(selectedProduct)
     }
 
-    private fun onSuccess(products: Products) {
+    private fun onSuccess(products: List<Product>?) {
         _productsLiveData.value = products
     }
 
